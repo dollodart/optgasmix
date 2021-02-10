@@ -103,44 +103,83 @@ class Gas:
         self.E = E
         self.Tmin = kwargs['Tmin']
         self.Tmax = kwargs['Tmax']
+        self.memos = {}
 
     def _eval_w(self,temperature):
         factor = kB*temperature / self.epsilon
         w = omega(factor)
         return w
 
+    def check_memo(self,temperature, quantity_name):
+        if temperature in self.memos:
+            if quantity_name in self.memos[temperature]:
+                return self.memos[temperature][quantity_name]
+        self.memos[temperature] = dict()
+        return None
+
     def density(self, temperature, pressure):
         """
         Default: mass specific density
         """
-        return pressure * self.mass / (kB*temperature)
+        memo = self.check_memo(temperature, 'density')
+        if memo is None:
+            density = pressure * self.mass / (kB*temperature) 
+            self.memos[temperature]['density'] = density
+            return density
+        return memo 
 
     def specific_volume(self, temperature, pressure):
         """
         Default: mole specific volume.
         """
-        return kB*temperature / pressure
+        memo = self.check_memo(temperature, 'specific volume')
+        if memo is None:
+            specific_volume = kB*temperature / pressure
+            self.memos[temperature]['specific_volume'] = specific_volume
+            return specific_volume
+        return memo
 
     def viscosity(self, temperature): # monatomic valid for polyatomic
-        return mu(temperature, self.mass, self.sigma, self._eval_w(temperature))
+        memo = self.check_memo(temperature, 'viscosity')
+        if memo is None:
+            viscosity = mu(temperature, self.mass, self.sigma, self._eval_w(temperature))
+            self.memos[temperature]['viscosity'] = viscosity
+            return viscosity
+        return memo
 
     def thermal_conductivity_monatomic(self, temperature):
-        return k(temperature, self.mass, self.sigma, self._eval_w(temperature), self.heat_capacity(temperature))
+        memo = self.check_memo(temperature, 'thermal conductivity monatomic')
+        if memo is None:
+            thermal_conductivity_monatomic = mu(temperature, self.mass, self.sigma, self._eval_w(temperature))
+            self.memos[temperature]['thermal conductivity monatomic'] = thermal_conductivity_monatomic
+            return thermal_conductivity_monatomic
+        return memo
 
     def heat_capacity(self, temperature):
-        if temperature > self.Tmin and temperature < self.Tmax:
-            return cp(temperature, self.A, self.B, self.C, self.D, self.E)
+        memo = self.check_memo(temperature, 'heat capacity')
+        if memo is None:
+            if temperature > self.Tmin and temperature < self.Tmax:
+                heat_capacity = cp(temperature, self.A, self.B, self.C, self.D, self.E)
+                self.memos[temperature]['heat capacity'] = heat_capacity
+                return heat_capacity
+            else:
+                message = f"temperature {temperature} is outside of range [{self.Tmin}, {self.Tmax}]"
+                raise Exception(message)
+                return 0
+        return memo
 
-        message = f"temperature {temperature} is outside of range [{self.Tmin}, {self.Tmax}]"
-        raise Exception(message)
-        return 0
 
     def thermal_conductivity(self, temperature):
-        return kpoly(temperature, self.heat_capacity(temperature), self.mass, self.viscosity(temperature))
+        memo = self.check_memo(temperature, 'thermal conductivity')
+        if memo is None:
+            thermal_conductivity = kpoly(temperature, self.heat_capacity(temperature), self.mass, self.viscosity(temperature))
+            self.memos[temperature]['thermal conductivity'] = thermal_conductivity
+            return thermal_conductivity
+        return memo
 
 class GasMixture:
     """
-    TODO: memoize viscosity calculations in the case temperature is held constant and mole fraction varied
+    TODO: check_memo viscosity calculations in the case temperature is held constant and mole fraction varied
     """
     def __init__(self, gases, compositions):
         self.gases = gases
