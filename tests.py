@@ -14,7 +14,8 @@
 # this is around 1 % the viscosity of water
 # heat capacity: 3.46*R from the CRC, 28.6 J/mol*K = 3.43*R from Incropera
 from props import gases, kB, mp, mixrule, GasMixture
-
+from time import time
+t0 = time()
 for key in gases:
     g = gases[key]
 
@@ -51,11 +52,11 @@ print('xO2 xN2 k/(W/m*k)')
 for x in range(0, 11):
     x /= 10
     gm.compositions = (x, 1 - x)
-#    print(x, round(1-x, 3), round(gm.thermal_conductivity(T), 5))
+    print(x, round(1-x, 3), round(gm.thermal_conductivity(T), 5))
 
 print('\n\n')
 # ternary mixtures
-gs = [gases['O2'], gases['Cl2'], gases['H2']]
+gs = [gases['O2'], gases['Cl2'], gases['N2']]
 gm = GasMixture(gs, None)
 from rand import gen_random_3
 mx = 0
@@ -71,3 +72,4 @@ for compositions in gen_random_3(scale):
         mxc = compositions
         mx = tc
 print('optimum', mxc, mx)
+print(f'total time {time() - t0:.3f}s')

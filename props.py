@@ -114,6 +114,7 @@ class Gas:
         if temperature in self.memos:
             if quantity_name in self.memos[temperature]:
                 return self.memos[temperature][quantity_name]
+            return None
         self.memos[temperature] = dict()
         return None
 
