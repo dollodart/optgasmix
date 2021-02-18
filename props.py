@@ -56,23 +56,6 @@ def kpoly(T, Cp, m, mu):
     """
     return (Cp + 5/4 * kB ) * mu / m
 
-def mixrule(mu, mm, x):
-    """
-    equation (1.4-15) and (9.3-17) of BSL
-    """
-    mumix = 0
-    n = len(x)
-    for a in range(n):
-        phib = []
-        for b in range(n):
-            mmr = mm[a] / mm[b]
-            mur = mu[a] / mu[b]
-            res = (1/8)**(1/2)*(1 + mmr)**(-1/2)*(1 + mur**(1/2)*mmr**(1/4))**2
-            phib.append(res)
-        mumix += x[a]*mu[a]/sum(phib[i] * x[i] for i in range(n))
-    return mumix
-
-
 def cp(T, A, B, C, D, E):
     """Gas heat capacity, empirical equation from Koretsky.
     Number specific per molecule, units J/K. """

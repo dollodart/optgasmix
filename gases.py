@@ -1,5 +1,6 @@
 from constants import *
-from props import omega, mu, k, kpoly, mixrule
+from props import omega, mu, k, kpoly
+from mixing import mixrule, weighted_geometric_mean, weighted_arithmetic_mean, weighted_harmonic_mean
 
 class Gas:
     def __init__(self, name, mass, sigma, epsilon, heat_capacity_calculator, *args, **kwargs):
@@ -127,16 +128,38 @@ class GasMixture:
         return mixrule(ts, mm, self.compositions)
 
     def density(self, temperature, pressure):
-        """Each gas acts independently, for thermodynamic properties."""
-        weighted = sum(self.gases[i].mass * self.compositions[i] for i in range(len(self.gases)))
-        return weighted*pressure/(kB*temperature)
+        """
+
+        Each gas acts independently for density. It's as if it occupies
+        a fraction of the volume in proportion to its composition.
+
+        Total Mass/Total Volume = sum(density_i*volume_i,i)/sum(volume) = sum(density_i*composition_i,i)/1
+
+        This is an arithmetic mean.
+        """
+
+        return weighted_arithmetic_mean(tuple(g.mass*pressure/(kB*temperature) for g in self.gases), self.compositions)
 
     def heat_capacity(self, temperature):
-        return sum(self.gases[i].heat_capacity(temperature) * self.compositions[i] for i in range(len(self.gases)))
+        """
+
+        Each gas acts independently for heat capacity. It's as if
+        it occupies a fraction of the volume in proportion to its
+        composition.
+
+        Total Heat Absorbed/Temperature Delta = (sum(cp_i*deltaT*number_i,i)/deltaT)
+        Total Heat Capacity = (Total Heat Absorbed/Temperature Delta)/Total Number 
+        = sum(cp_i*number_i,i)/sum(number_i,i) = sum(cp_i*composition_i,i)/1
+
+        This is an arithmetic mean.
+        """
+        return weighted_arithmetic_mean(tuple(g.heat_capacity(temperature) for g in self.gases), self.compositions)
 
     def mass(self):
-        """Note: gas mixture doesn't have atomic property of mass, returning arithmetic mean"""
-        return sum(self.gases[i].mass * self.compositions[i] for i in range(len(self.gases)))
+        """
+        Gas mixture don't have atomic property of mass, returning weighted geometric mean.
+        """
+        return weighted_geometric_mean(tuple(g.mass for g in self.gases), self.compositions)
 
     def __str__(self):
         st = ''

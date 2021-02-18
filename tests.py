@@ -1,7 +1,7 @@
 """
 Tests
 
-Compare output toStandard conditions hydrogen 
+Compare output to standard conditions hydrogen 
 molar mass: ~2 g/mol ~ 2 proton masses for every molecule
 
 density: 0.09693 - 0.08078 kg/m^3 from Incropera
@@ -19,7 +19,8 @@ heat capacity: 3.46*R from the CRC, 28.6 J/mol*K = 3.43*R from Incropera
 """
 
 import pandas as pd
-from props import kB, mp, NA, mixrule, cp
+from props import kB, mp, NA, cp
+from mixing import mixrule
 from gases import Gas, GasMixture
 from time import time
 
