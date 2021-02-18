@@ -91,18 +91,15 @@ def cp(T, A, B, C, D, E):
     return kB * (A + B * T + C * T**2 + D * T**(-2) + E * T**3)
 
 class Gas:
-    def __init__(self, name, mass, sigma, epsilon, A, B, C, D, E, *args, **kwargs):
+    def __init__(self, name, mass, sigma, epsilon, heat_capacity_calculator, *args, **kwargs):
         self.name = name
         self.mass = mass
         self.sigma = sigma
         self.epsilon = epsilon
-        self.A = A
-        self.B = B
-        self.C = C
-        self.D = D
-        self.E = E
-        self.Tmin = kwargs['Tmin']
-        self.Tmax = kwargs['Tmax']
+        self.heat_capacity_calculator = heat_capacity_calculator
+
+        self.Tmin = kwargs.get('Tmin', None)
+        self.Tmax = kwargs.get('Tmax', None)
         self.memos = {}
 
     def _eval_w(self,temperature):
@@ -160,7 +157,7 @@ class Gas:
         memo = self.check_memo(temperature, 'heat capacity')
         if memo is None:
             if temperature > self.Tmin and temperature < self.Tmax:
-                heat_capacity = cp(temperature, self.A, self.B, self.C, self.D, self.E)
+                heat_capacity = self.heat_capacity_calculator(temperature)
                 self.memos[temperature]['heat capacity'] = heat_capacity
                 return heat_capacity
             else:
@@ -248,5 +245,6 @@ df['epsilon'] = df['eps/k'] * kB
 gases = {}
 for index, row in df.iterrows():
     row = row.to_dict()
+    row['heat_capacity_calculator'] = lambda T: cp(T, row['A'],row['B'],row['C'],row['D'],row['E'])
     g = Gas(**row)
     gases[row['formula']] = g
