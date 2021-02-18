@@ -59,7 +59,7 @@ class Gas:
     def thermal_conductivity_monatomic(self, temperature):
         memo = self.check_memo(temperature, 'thermal conductivity monatomic')
         if memo is None:
-            thermal_conductivity_monatomic = mu(temperature, self.mass, self.sigma, self._eval_w(temperature))
+            thermal_conductivity_monatomic = k(temperature, self.mass, self.sigma, self._eval_w(temperature))
             self.memos[temperature]['thermal conductivity monatomic'] = thermal_conductivity_monatomic
             return thermal_conductivity_monatomic
         return memo
