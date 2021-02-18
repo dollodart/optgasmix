@@ -26,12 +26,6 @@ def omega_D(kTovereps):
     x = kTovereps
     return a / x**b + c / np.exp(d * x) + e / np.exp(f * x) + g / np.exp(h * x)
 
-#for ktovereps in range(1, 1000):
-#    ktovereps /= 10
-#    print(omega(ktovereps))
-#    print(omega_D(ktovereps))
-#import sys; sys.exit()
-
 def k(T, m, sigma, omega, Cp):
     """
 
