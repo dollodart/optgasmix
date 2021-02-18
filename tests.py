@@ -19,7 +19,8 @@ heat capacity: 3.46*R from the CRC, 28.6 J/mol*K = 3.43*R from Incropera
 """
 
 import pandas as pd
-from props import kB, mp, NA, mixrule, cp, Gas, GasMixture
+from props import kB, mp, NA, mixrule, cp
+from gases import Gas, GasMixture
 from time import time
 
 df = pd.read_csv('data/merged.csv')
