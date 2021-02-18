@@ -1,20 +1,43 @@
-# standard conditions hydrogen 
-# molar mass: ~2 g/mol
-# this is also around 2 proton masses for every molecule
+"""
+Tests
 
-# density: 0.09693 - 0.08078 kg/m^3 from Incropera
+Compare output toStandard conditions hydrogen 
+molar mass: ~2 g/mol ~ 2 proton masses for every molecule
 
-# thermal conductivity: 157 - 183 mW/(m*K) according to Incropera's Heat Transfer, and 177.9 mW/(m*K) in BSL at 300 K
-# this is for 1 cm length 1 m^2 cross section and 100 K differnce (boiling water and ice) a heat rate of 0.183 kW
-# this is physically reasonable, though small: a vacuum cleaner draws something 10 Amps * 120 V = 1.2 kW
-# it is around 10 times less than the thermal conductivity of ice at 1.88 W/(m*K) from Incropera
-# which is suprisingly high given it is around 1000 times less dense than ice
+density: 0.09693 - 0.08078 kg/m^3 from Incropera
 
-# viscosity: .009 cP = 9.e-6 Pa*s from Eng. toolbox, 89.6e-7 Pa*s = 8.96e-6 Pa*s from Incropera
-# this is around 1 % the viscosity of water
-# heat capacity: 3.46*R from the CRC, 28.6 J/mol*K = 3.43*R from Incropera
-from props import gases, kB, mp, mixrule, GasMixture
+thermal conductivity: 157 - 183 mW/(m*K) according to Incropera's Heat Transfer, and 177.9 mW/(m*K) in BSL at 300 K
+this is for 1 cm length 1 m^2 cross section and 100 K differnce (boiling water and ice) a heat rate of 0.183 kW
+this is physically reasonable, though small: a vacuum cleaner draws something 10 Amps * 120 V = 1.2 kW
+it is around 10 times less than the thermal conductivity of ice at 1.88 W/(m*K) from Incropera
+which is suprisingly high given it is around 1000 times less dense than ice
+
+viscosity: .009 cP = 9.e-6 Pa*s from Eng. toolbox, 89.6e-7 Pa*s = 8.96e-6 Pa*s from Incropera
+this is around 1 % the viscosity of water
+
+heat capacity: 3.46*R from the CRC, 28.6 J/mol*K = 3.43*R from Incropera
+"""
+
+import pandas as pd
+from props import kB, mp, NA, mixrule, cp, Gas, GasMixture
 from time import time
+
+df = pd.read_csv('data/merged.csv')
+df['B'] = df['B'] / 1e3 # constant factors
+df['C'] = df['C'] / 1e6
+df['D'] = df['D'] / 1e-5
+df['E'] = df['E'] / 1e9
+df['sigma'] = df['sigma'] * 1.e-10 # Ang. -> m
+df['mass'] = df['mol weight'] / NA / 1000 # g/mol -> kg
+df['epsilon'] = df['eps/k'] * kB
+
+gases = {}
+for index, row in df.iterrows():
+    row = row.to_dict()
+    row['heat_capacity_calculator'] = lambda T: cp(T, row['A'],row['B'],row['C'],row['D'],row['E'])
+    g = Gas(**row)
+    gases[row['formula']] = g
+
 t0 = time()
 for key in gases:
     g = gases[key]
