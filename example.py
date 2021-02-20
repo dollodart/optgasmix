@@ -7,6 +7,7 @@ def shomates_cp(x, A, B, C, D, E):
     return A  + B * x + C * x**2 + D * x**3 + E/x**2
 
 # between 298 and 6000 K
+# almost constant, and equal to 5R/2, as expected for a monatomic gas
 cp = lambda T: shomates_cp(T/1000, 20.78603,4.850683e-10,-1.582916e-10,1.525102e-11,3.196347e-11)/NA
 
 # heat capacity data from NIST thermochemical 
@@ -36,10 +37,12 @@ n2 = Gas(name='Nitrogen',
         Tmax=6000)
 
 # different mixtures of O2 and N2
-T = 298.15
-P = 101325.
+T = 298.15 # K
+P = 101325. # Pa
 gs = [he, n2]
 gm = GasMixture(gs, (0.5,0.5))
+d = 0.3 # meters
+v = 10 # meters per second
 
 # from Incropera, air at standard conditions should be around 1 kg/m^3
 print('density (kg/m^3)')
@@ -51,8 +54,22 @@ print('Prandtl number')
 for g in gs:
     print(g.name, g.viscosity(T) * g.heat_capacity(T)/(g.thermal_conductivity(T)*g.mass))
 
-pr = gm.viscosity(T) * gm.heat_capacity(T) / (gm.thermal_conductivity(T)*gm.mass()) # mass is geometrically averaged property?
+pr = gm.viscosity(T) * gm.heat_capacity(T) / (gm.thermal_conductivity(T)*gm.mass()) 
+# note: mass used here is geometric average
 print('mixture', pr) 
+
+if pr < 0.1:
+    raise Exception("Prandtl number not in laminar regime")
+elif pr < 0.6:
+    print('warning--Prandtl number is at edge of valid range')
+
+print('Reynold\'s number at far plate edge')
+re = gm.density(T,P)*v*d/gm.viscosity(T)
+print(f'{re:.1f}')
+if re > 1e5:
+    raise Exception("Reynold\'s number at far plate edge is turbulent, mixed turbulent and laminar flow")
+elif re > 1e4:
+    print('warning--Reynold\'s number at far plate edge within a factor of 10 of critical (turbulent to laminar) transition')
 
 # flat plate (Blasius solution)
 a = 1/2
