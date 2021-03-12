@@ -1,5 +1,5 @@
 from gases import Gas, GasMixture
-from constants import NA, kB
+from constants import NA, kB, pi
 
 def shomates_cp(x, A, B, C, D, E):
     # x = T / 1000 in Kelvin
@@ -37,12 +37,12 @@ n2 = Gas(name='Nitrogen',
         Tmax=6000)
 
 # different mixtures of O2 and N2
-T = 298.15 # K
+T = 798.15 # K
 P = 101325. # Pa
 gs = [he, n2]
 gm = GasMixture(gs, (0.5,0.5))
 d = 0.3 # meters
-v = 10 # meters per second
+v = 1. # meters per second
 
 # from Incropera, air at standard conditions should be around 1 kg/m^3
 print('density (kg/m^3)')
@@ -74,8 +74,17 @@ elif re > 1e4:
 # flat plate (Blasius solution)
 a = 1/2
 b = 1/5
-print(f'x{gs[0].name}=1-x{gs[1].name} fom')
+print(f'x{gs[0].name}=1-x{gs[1].name} h/(W/(m^2*K)) tau/s')
+
 ksolid = 30 # high temperature conductivity of Silicon, W/(m*K)
+As = d**2/4*pi
+thickness = 0.001 # = 1 mm thick wafer
+Vs = As*thickness
+Ls = Vs / As # = thickness
+rhos = 2330 # kg/m^3
+Cps =  712 # J/(kg*K) at 300 K 
+Cps *= rhos # J/(m^3*K), volume-specific not in agreement with other conventions
+fo = ksolid/(Cps*Ls**2) # [=] 1/s (fourier number is actually a scaled time coordinate)
 
 opt = -1
 for x in range(0, 101):
@@ -85,15 +94,25 @@ for x in range(0, 101):
     gcp = gm.heat_capacity(T)
     gmu = gm.viscosity(T)
     gk = gm.thermal_conductivity(T)
-    fom = gk**(1-b) * gmu**(b-a) * gcp**(b) * gmm**(a-b)
+#    fom = gk**(1-b) * gmu**(b-a) * gcp**(b) * gmm**(a-b)
     grho = gm.density(T, P)
 
-    re = grho*0.3*1./gmu
+    re = grho*d*v/gmu
     pr = gmu * gcp / (gk * gmm)
-    nu = 2/9* re**a * pr**b
-    bi = nu*gk/ksolid
-    assert bi < 0.1
-    print(x, fom)
+    nu = 2/9 * re**a * pr**b
+    h = nu / d * gk # Nu = h*L/k(gas)
+    bi_parallel = h * d / ksolid
+    bi_normal = h * Ls / ksolid
+    #tau = 1./(bi_normal*fo)
+    #assert round(tau, 6) == round(d * Ls * Cps / (gk * nu), 6)
+    tau = h / (Ls * Cps) 
+    fom = h
+
+    assert bi_normal < 0.1
+    if bi_parallel > 0.1:
+        print(f'lateral thermal inhomogeneity Bi_parallel = {bi_parallel:.2E}')
+
+    print(f'{x:.2f}, {h:.3E}, {tau:.3E}s')
     if fom > opt:
         opt = fom
         optmix = x
