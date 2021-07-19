@@ -1,5 +1,5 @@
 import numpy as np
-from constants import *
+from .constants import *
 
 def omega(kTovereps):
     """BSL appendix E, applies to viscosity and thermal conductivity."""

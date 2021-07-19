@@ -1,5 +1,5 @@
-from gases import Gas, GasMixture
-from constants import NA, kB, pi
+from optgasmix.gases import Gas, GasMixture
+from optgasmix.constants import NA, kB, pi
 
 def shomates_cp(x, A, B, C, D, E):
     # x = T / 1000 in Kelvin

@@ -19,13 +19,14 @@ heat capacity: 3.46*R from the CRC, 28.6 J/mol*K = 3.43*R from Incropera
 """
 
 import pandas as pd
-from props import kB, mp, NA, cp
-from mixing import mixrule
-from gases import Gas, GasMixture
+from optgasmix import lennard_jones_heat_capacities_data_file
+from optgasmix.props import kB, mp, NA, cp
+from optgasmix.mixing import mixrule
+from optgasmix.gases import Gas, GasMixture
 from time import time
 
-df = pd.read_csv('data/merged.csv')
-df['B'] = df['B'] / 1e3 # constant factors
+df = pd.read_csv(lennard_jones_heat_capacities_data_file)
+df['B'] = df['B'] / 1e3 # constant factors (also defined in ogm)
 df['C'] = df['C'] / 1e6
 df['D'] = df['D'] / 1e-5
 df['E'] = df['E'] / 1e9
@@ -83,7 +84,7 @@ print('\n\n')
 # ternary mixtures
 gs = [gases['O2'], gases['Cl2'], gases['N2']]
 gm = GasMixture(gs, None)
-from rand import gen_random_3
+from optgasmix.rand import gen_random_3
 mx = 0
 print('xO2','xCl2','xN2','therm. cond.')
 tdict = dict()

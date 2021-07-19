@@ -1,6 +1,6 @@
-from constants import *
-from props import omega, mu, k, kpoly
-from mixing import mixrule, weighted_geometric_mean, weighted_arithmetic_mean, weighted_harmonic_mean
+from .constants import *
+from .props import omega, mu, k, kpoly
+from .mixing import mixrule, weighted_geometric_mean, weighted_arithmetic_mean, weighted_harmonic_mean
 
 class Gas:
     def __init__(self, name, mass, sigma, epsilon, heat_capacity_calculator, *args, **kwargs):
