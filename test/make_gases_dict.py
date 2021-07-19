@@ -19,7 +19,7 @@ df['sigma'] = df['sigma'] * 1.e-10 # Ang. -> m
 df['mass'] = df['mol weight'] / NA / 1000 # g/mol -> kg
 df['epsilon'] = df['eps/k'] * kB
 
-gases = {}
+gases = dict()
 for index, row in df.iterrows():
     row = row.to_dict()
     row['heat_capacity_calculator'] = lambda T: cp(T, row['A'],row['B'],row['C'],row['D'],row['E'])
