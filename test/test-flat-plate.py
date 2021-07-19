@@ -86,18 +86,23 @@ Cps =  712 # J/(kg*K) at 300 K
 Cps *= rhos # J/(m^3*K), volume-specific not in agreement with other conventions
 fo = ksolid/(Cps*Ls**2) # [=] 1/s (fourier number is actually a scaled time coordinate)
 
+xyy = []
+
 opt = -1
 for x in range(0, 101):
     x /= 100
     gm.compositions = (x, 1 - x)
-    gmm = gm.mass()
+    # mass is by default a geometric mean
+    # but the density and specific capacities will be arithmetic means, and so should be arithmetically averaged
+#    gmm = gm.mass()
+    gmm = gs[0].mass*x + gs[1].mass*(1-x)
     gcp = gm.heat_capacity(T)
     gmu = gm.viscosity(T)
     gk = gm.thermal_conductivity(T)
-#    fom = gk**(1-b) * gmu**(b-a) * gcp**(b) * gmm**(a-b)
+    fom = gk**(1-b) * gmu**(b-a) * gcp**(b) * gmm**(a-b)
     grho = gm.density(T, P)
 
-    re = grho*d*v/gmu
+    re = grho * d * v / gmu
     pr = gmu * gcp / (gk * gmm)
     nu = 2/9 * re**a * pr**b
     h = nu / d * gk # Nu = h*L/k(gas)
@@ -106,7 +111,6 @@ for x in range(0, 101):
     #tau = 1./(bi_normal*fo)
     #assert round(tau, 6) == round(d * Ls * Cps / (gk * nu), 6)
     tau = h / (Ls * Cps) 
-    fom = h
 
     assert bi_normal < 0.1
     if bi_parallel > 0.1:
@@ -116,6 +120,17 @@ for x in range(0, 101):
     if fom > opt:
         opt = fom
         optmix = x
+    xyy.append((x, fom, h))
+
 print('-'*72)
 print('optimum')
 print(f'x{gs[0].name}={optmix*100:.1f}%, x{gs[1].name}={(1-optmix)*100:.1f}%')
+
+x, y1, y2 = zip(*xyy)
+y1m = max(y1)
+y2m = max(y2)
+y1n = [y / y1m for y in y1]
+y2n = [y / y2m for y in y2]
+
+for i in range(len(y1n)): # figure of merit the same trend as flat plate
+    assert abs(y1n[i] - y2n[i]) < .01
