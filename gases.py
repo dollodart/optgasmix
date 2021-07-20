@@ -2,7 +2,31 @@ from .constants import *
 from .props import omega, mu, k, kpoly
 from .mixing import mixrule, weighted_geometric_mean, weighted_arithmetic_mean, weighted_harmonic_mean
 
+def memo_checker(func):
+    """
+    Decorator for memoization.
+    """
+    def inner_func(self, temperature, pressure=None): # will contain pressure
+        if temperature in self.memos:
+            if func in self.memos[temperature]:
+                return self.memos[temperature][func]
+                # you can use first class objects like functions as dict keys
+        else:
+            self.memos[temperature] = dict()
+        if pressure is None:
+            val = func(self, temperature)
+        else:
+            val = func(self, temperature, pressure)
+        self.memos[temperature][func] = val
+        return val
+    return inner_func
+
 class Gas:
+    """
+    Gas class. While temperature and pressure are state variables, they are not
+    chemical identities or material properties, and so are inputs to methods
+    rather than attributes.
+    """
     def __init__(self, name, mass, sigma, epsilon, heat_capacity_calculator, *args, **kwargs):
         self.name = name
         self.mass = mass
@@ -19,77 +43,46 @@ class Gas:
         w = omega(factor)
         return w
 
-    def check_memo(self,temperature, quantity_name):
-        if temperature in self.memos:
-            if quantity_name in self.memos[temperature]:
-                return self.memos[temperature][quantity_name]
-            return None
-        self.memos[temperature] = dict()
-        return None
-
+    @memo_checker
     def density(self, temperature, pressure):
         """
         Default: mass specific density
         """
-        memo = self.check_memo(temperature, 'density')
-        if memo is None:
-            density = pressure * self.mass / (kB*temperature) 
-            self.memos[temperature]['density'] = density
-            return density
-        return memo 
+        return pressure * self.mass / (kB*temperature) 
 
+    @memo_checker
     def specific_volume(self, temperature, pressure):
         """
         Default: mole specific volume.
         """
-        memo = self.check_memo(temperature, 'specific volume')
-        if memo is None:
-            specific_volume = kB*temperature / pressure
-            self.memos[temperature]['specific_volume'] = specific_volume
-            return specific_volume
-        return memo
+        return kB*temperature / pressure
 
+    @memo_checker
     def viscosity(self, temperature): # monatomic valid for polyatomic
-        memo = self.check_memo(temperature, 'viscosity')
-        if memo is None:
-            viscosity = mu(temperature, self.mass, self.sigma, self._eval_w(temperature))
-            self.memos[temperature]['viscosity'] = viscosity
-            return viscosity
-        return memo
+        return mu(temperature, self.mass, self.sigma, self._eval_w(temperature))
 
+    @memo_checker
     def thermal_conductivity_monatomic(self, temperature):
-        memo = self.check_memo(temperature, 'thermal conductivity monatomic')
-        if memo is None:
-            thermal_conductivity_monatomic = k(temperature, self.mass, self.sigma, self._eval_w(temperature))
-            self.memos[temperature]['thermal conductivity monatomic'] = thermal_conductivity_monatomic
-            return thermal_conductivity_monatomic
-        return memo
+        return k(temperature, self.mass, self.sigma, self._eval_w(temperature))
 
+    @memo_checker
     def heat_capacity(self, temperature):
-        memo = self.check_memo(temperature, 'heat capacity')
-        if memo is None:
-            if temperature > self.Tmin and temperature < self.Tmax:
-                heat_capacity = self.heat_capacity_calculator(temperature)
-                self.memos[temperature]['heat capacity'] = heat_capacity
-                return heat_capacity
-            else:
-                message = f"temperature {temperature} is outside of range [{self.Tmin}, {self.Tmax}]"
-                raise Exception(message)
-                return 0
-        return memo
+        if temperature > self.Tmin and temperature < self.Tmax:
+            heat_capacity = self.heat_capacity_calculator(temperature)
+            return heat_capacity
+        else:
+            message = f"temperature {temperature} is outside of range [{self.Tmin}, {self.Tmax}]"
+            raise Exception(message)
 
-
+    @memo_checker
     def thermal_conductivity(self, temperature):
-        memo = self.check_memo(temperature, 'thermal conductivity')
-        if memo is None:
-            thermal_conductivity = kpoly(temperature, self.heat_capacity(temperature), self.mass, self.viscosity(temperature))
-            self.memos[temperature]['thermal conductivity'] = thermal_conductivity
-            return thermal_conductivity
-        return memo
+        return kpoly(temperature, self.heat_capacity(temperature), self.mass, self.viscosity(temperature))
 
 class GasMixture:
     """
-    TODO: check_memo viscosity calculations in the case temperature is held constant and mole fraction varied
+    Gas mixture, defined in terms of gases and their compositions as state
+    variables. Temperature and pressure are input to methods rather than a state because
+    it is a condition, rather than chemical identity or material property of the gas mixture.
     """
     def __init__(self, gases, compositions):
         self.gases = gases
