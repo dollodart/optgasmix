@@ -73,7 +73,7 @@ elif re > 1e4:
 
 # flat plate (Blasius solution)
 a = 1/2
-b = 1/5
+b = 1/3
 print(f'x{gs[0].name}=1-x{gs[1].name} h/(W/(m^2*K)) tau/s')
 
 ksolid = 30 # high temperature conductivity of Silicon, W/(m*K)

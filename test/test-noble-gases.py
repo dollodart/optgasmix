@@ -11,7 +11,7 @@ gs = [gases_monatomic['He'], gases_monatomic['Ne'],
 
 # assume flat plate (Blasius solution)
 a = 1/2
-b = 1/5
+b = 1/3
 
 fom_max = 0
 y = []
