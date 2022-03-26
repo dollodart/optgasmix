@@ -64,6 +64,11 @@ properties of gases, though they may not implement multicomponent mixing rules
 and instead use simple linear weighting. One library in wide use and well-funded is
 Cantera.
 
+# Dependencies
+
+Other than standard computational science libraries (numpy, scipy, matplotlib),
+this uses the ternary package to make ternary composition plots.
+
 # Data sources
 - Collision cross-sections and lennard-jones parameters: BSL Transport
   Phenomena, 2nd Edition
