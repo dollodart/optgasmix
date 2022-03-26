@@ -1,18 +1,17 @@
 # Physics of the Optimum Gas for Heat Transfer
 
-Gases are rather conductors of heat relative to liquieds. However, they
-can be used to directly cool a product in many cases where a liquid heat
-transfer needs a shell. Some applications in semiconductor processing
-require direct cooling of devices by gases, and though limited by
-reactivity considerations, there are still some considerations for
-choosing among eligible inert gases. These applications are at standard
-pressure or less in vacuum systems and near standard temperature or
-greater, well within the ideal gas range. The advantage of gases is
-their transport properties are relatively simple to evaluate at low
-density where the kinetic theory of gases is valid. In this particular
-case, the flow is usually forced-convection, unconfined, and laminar,
-which is further ideal, since transport estimates for turbulent flow are
-much harder to make.
+Gases are rather conductors of heat relative to liquieds. However, they can be
+used to directly cool a product in many cases where a liquid heat transfer
+needs a shell. Some applications in semiconductor processing require direct
+cooling of devices by gases, and though limited by reactivity considerations,
+there are still some considerations for choosing among eligible inert gases.
+These applications are at standard pressure or less in vacuum systems and near
+standard temperature or greater, well within the ideal gas range. The advantage
+of gases is their transport properties are relatively simple to evaluate at low
+density where the kinetic theory of gases is valid. In this particular case,
+the flow is usually forced-convection, unconfined, and laminar, which is
+further ideal, since transport estimates for turbulent flow are much harder to
+make.
 
 As BSL notes in section 1.4 and asks the reader to work out in
 problem 1A.2 (though the nearest problem is actually 1A.4), the
@@ -53,12 +52,22 @@ expected that the energies of interactions would follow such a general rule.
 It is simple to uniformly sample composition space in the case of two
 variables, since there is by the condition of fractions summing to 1 only one
 degree of freedom, which can take on a linear space. However, for higher cases
-that is not the case.
+that is not the case. A distribution which has a support satisfying the
+constraint of composition, namely that all mole fractions sum to 1, is sampled
+to quickly obtain sample points. This is not uniform, but near uniform when
+sufficiently densely sampled.
+
+# Related Projects
+
+More than one chemical engineering libraries allow you to compute the transport
+properties of gases, though they may not implement multicomponent mixing rules
+and instead use simple linear weighting. One library in wide use and well-funded is
+Cantera.
 
 # Data sources
 - Collision cross-sections and lennard-jones parameters: BSL Transport
   Phenomena, 2nd Edition
 - Heat capacities: Koretsky, Chemical and Engineering Thermodynamics
 
-# Related works
+# Related Literature
 - Optimum composition of gas mixture in a novel chimney-based LED bulb
