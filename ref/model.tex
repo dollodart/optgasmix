@@ -1,0 +1,593 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{gensymb}
+\usepackage{listings}
+\usepackage{siunitx}
+\usepackage{hyperref}
+\lstset{language=Python}
+\usepackage{biblatex}
+\addbibresource{ref.bib}
+
+\usepackage{geometry}
+\geometry{margin=1in}
+
+\title{Determination of the Optimal Gas Mixture for Heat Transfer}
+\author{David Ollodart}
+
+\begin{document}
+%
+\maketitle
+\tableofcontents
+%
+\section{Problem Statement}
+
+Gases are poor conductors of heat relative to liquids. However, they
+can be used to directly cool a product in many cases where a liquid
+heat transfer needs a shell. Some applications in semiconductor
+processing require direct cooling of devices by gases, and though
+limited by reactivity considerations, there are still many eligible
+inert gases. These applications are at standard pressure or less in
+vacuum systems and near standard temperature or greater, well within the
+ideal gas range for any inert gas. It is relative simple to evaluate the
+transport properties of gases at low density where the kinetic theory
+of gases is valid. Also, in this particular case, the flow is usually
+forced-convection, unconfined, and laminar, which is further ideal,
+since transport calculations for turbulent flow are harder to make and
+more uncertain.
+
+\section{Non-thermodynamic and Transport Considerations}
+
+These considerations are either qualitative (hard constraint) or factor
+into an optimization as linear terms.
+
+\subsection{Chemical Reactivity}
+
+There are really only nitrogen and the noble gases as valid heat
+transfer gases which are inert. In operations where hydrogen is anyways
+used, it is possible to also use hydrogen, since the reduction of the
+substrate is already allowed. The other gases have deficiencies: water
+vapor (possible oxidant, and condenses at room temperature), halides
+(highly reactive), oxygen (highly oxidating), hydrocarbons (cause some
+contamination).
+
+\subsection{Price (due to separations cost)}
+
+The dry composition of air is mostly nitrogen (around 77\%), then
+oxygen (around 22\%), then significant amount of Argon (around 0.9\%),
+then trace gases. It is therefore easy (and inexpensive) to extract
+and purify nitrogen, oxygen, and argon from the atmosphere through
+fractional distillation. Even Krypton is around 1 ppm and can be
+fractionally distilled from air. Other gases are components of common
+chemicals. Most notably hydrogen can be easily generated even from
+water, but also all of the halides, sulfides, and oxides may be derived
+as byproducts of industrially important separations processes. 
+
+Only helium is a gas which is not appreciably in the atmosphere and
+not a component of any chemical, and so has to be non-renewably mined
+from deposits where it is trapped inside shale and other geological
+features (though in the solar system, it is the second most abundant
+chemical). Do note, though, that as the lowest molecular weight noble
+gas it has some extreme properties that may make it desirable.
+
+\section{Molecular Theories for the Properties of Gases}
+
+The relevant factors can be discussed based on the molecular theories by
+which the equations are derived.
+
+There are the following factors, sorted in approximately decreasing
+order of importance:
+
+\begin{enumerate}
+\item Atomic mass(es)
+\item Number of Atoms
+\item Chemical valence
+\item Structure
+\end{enumerate}
+
+The governing equation for momentum transport, the steady-state
+Navier-Stokes equation, neglecting changes in pressure, has two terms:
+
+\begin{equation}
+\rho \mathbf{v} \cdot \nabla \mathbf{v} = \mu \nabla \cdot \nabla \mathbf{v} \,.
+\end{equation}
+
+Here the molecular model is discussed which determine $\mu$,
+the coefficient on the viscous transport term. The steady-state heat
+transfer equation is, neglecting viscous dissipation,
+
+\begin{equation}
+\mathbf{v} \cdot \nabla (C_p(T) T) = k \nabla \cdot \nabla T \,.
+\end{equation} % C_p is molar specific heat capacity
+
+Here the molecular model is discussed which determines $k$, the
+coefficient on the heat diffusion term.
+
+Thermodynamics factors into transport properties because the same
+molecular modes that allow for heat to be absorbed allow for heat to
+be transferred, so the heat capacity appears in thermal conductivity
+properties. Also, obviously the density as a thermodynamic property of
+the gas appears as an important term.
+
+Later in \S\ref{sec:transport-eqns} the macroscopic, convective
+transport for the other terms are discussed.
+
+\subsection{Thermodynamics}
+
+When discussing specific properties, like the specific heat capacity,
+it is crucial to establish whether it is specific to mass, volume,
+or number (the latter two being proportional at any temperature for a
+gas). Also, which thermodynamic variable is being held constant, since
+$C_p = C_v + R$. Here, heat capacity always refers to number specific
+rate of change of enthalpy with respect to temperature at constant
+pressure, unless otherwise qualified. Note number and volume specific
+trends are the same and so used interchangeably.
+
+The volume specific heat capacity increases with the size of the
+molecule, especially because of vibrational and rotational modes. Atomic
+mass has an affect on vibrational modes and their energies, too. However
+the volume specific heat capacity should be independent of the atomic
+mass, and that is realized in noble gases which all have a heat capacity
+of very nearly $5R/2$. Of course, the mass specific heat capacity therefore
+decreases by the proportion of the mass increase.
+
+\subsection{Microscopic (Viscous/Diffusive) Transport}
+
+\subsubsection{Energetic Parameters and Size}
+
+The energetic parameter of interaction is much lower for noble gases
+than others, as expected by chemical valence (as an example, the
+ratio of the energetic parameter of helium to that of hydrogen is
+approximately $3:19$). The collision cross-section increases with the
+energetic parameter, as expected, since two molecules are more likely
+to be "captured" in an interaction if they interact more strongly
+(here likely means, at all the same and some farther distances of
+approach). All transport properties decreases with increasing energetic
+parameter and collision cross-section, since the
+
+The collision cross-section increases with the size and therefore mass
+(when mass is by adding atoms, rather than changing atomic mass),
+because bigger molecules are more likely to hit each other. These
+decrease the transport properties for both heat and momentum. However,
+bigger molecules also have higher heat capacities and more modes
+by which to transfer energy for every collision, so the thermal
+conductivity happens to increase with molecule size.
+
+% In fact, as one can see in $k$, there is a proportionality to heat
+% capacity which increases with molecular size, and therefore molecular
+% mass.
+
+\subsubsection{(Atomic) Mass}
+
+The mass of the molecule is a factor in momentum transport at a
+macroscopic level, in the convective heat transport and boundary layer
+analysis. As the quantitative section shows, a higher mass improves
+heat transfer macroscopically, though the net effect of increasing mass
+can be to decrease transport due to microscopic or molecular factors on
+transport properties. This section discusses mass changes due to changes
+in the atomic mass, since there are other effects from increasing the
+mass by increasing the number of atoms and therefore size.
+
+Since the Maxwell--Boltzmann distribution specifies a distribution of
+kinetic energies, the velocity of the particles decreases with the root
+of atomic mass. So even atomic mass changes in the same period tend
+to change transport properties, though there are other factors (the
+homologous series of noble gases gives 10.2, 35.7, 122.4, 170, and
+234 for the Lennard-Jones parameter, and 2.576, 2.789, 3.432, 3.679,
+4.009 for the effective radius. The Lennard-Jones parameter changes
+significantly because of London dispersion interactions). From BSL the
+transport properties are more exactly
+
+\begin{align}
+\mu &= \frac{5}{16} \frac{\sqrt{\pi k_B m T}}{\pi \sigma^2 \Omega} \tag{BSL 1.4-14}\,\\
+k &= (C_p + \frac 54  k_B )  \frac{\mu}{m} \tag{BSL 9.3-15} \label{eqn:kpoly}\,.
+\end{align}
+
+This shows the property of molecular momentum transport, viscosity,
+increases with the square root of mass. This is because if the
+kinetic energy distribution is fixed, then $mv^2/2$ and equivalently
+$p^2/2m$ is fixed (fixing kinetic energy is equivalent to fixing
+temperature). Therefore the average momentum of a particle increases
+by the square root of mass when the mass is increased at a given
+temperature.
+
+However, the property of molecular heat transfer, the thermal
+conductivity, decreases with the square root of mass. This is because
+the velocity decreases with the square root of mass. The mean free path
+is independent of atomic mass, so when the velocity decreases with the
+square root of mass, the frequency of collisions between molecules
+decreases by the same. More exactly, there is the following for
+intermolecular collision rate:
+
+\begin{equation}
+\gamma = \frac{P}{k_B T} \sigma^2 \sqrt{\frac{8 k_B T}{\pi m}} \,.
+\end{equation}
+
+%The decrease is due to a decrease in the frequency of collisions while
+%how far molecules get between collisions remains the same.
+
+For heat transfer, considering only the collision of gas molecules at
+microscopic scale, a small, low-atomic weight, and inert molecule is
+best for transport. For this reason, helium gas is often used. However,
+because of both convective flow and coupled heat-and-mass transport for
+diffusive flow which increase with increasing atomic mass, such a gas
+may not be optimum.
+
+\section{Mixing Rules}
+
+The mixing rule for transport properties is non-linear (BSL Transport
+Phenomena, 2nd Ed).  
+
+\begin{align}
+\mu_\text{mix} &= \sum_{\alpha=1}^N \frac{x_\alpha \mu_\alpha}{\sum_\beta x_\beta \Phi_{\alpha\beta}}\,, \tag{BSL 1.4-15}\\
+\Phi_{\alpha\beta} &= \frac{1}{\sqrt{8}} \left(1 + \frac{M_\alpha}{M_\beta}\right)^{-1/2}
+\left[1 + \left(\frac{\mu_\alpha}{\mu_\beta}\right)^{1/2}\left(\frac{M_\beta}{M_\alpha}\right)^{1/4}\right]^2 \,.\tag*{}
+\end{align}
+
+As BSL notes in section 1.4 and asks the reader to work out in problem
+1A.2 (though the nearest problem is actually 1A.4), the mixture property
+can be more extreme than the properties of the single components. In the
+example they give data showing the viscosity of a mixture of 75\%
+hydrogen and 25\% dichlorodifluoromethane as 135.1 micropoise, compared
+to 124 micropoise for dichlorodifluoromethane and 88.4 micropoise for
+hydrogen.
+
+For this reason, optimization of transport properties should include
+composition as an independent variable. However, given the significant
+difference between hydrogen and dichlorodifluoromethane's molar masses
+(the ratio is around 60), it isn't necessarily representative of most
+gas mixtures. When the components are similar, often the non-linear
+equation still gives an interpolation of the mixture property from
+the component properties. One can observe that when the ratios of
+viscosities and molar massses are both unity, the $\Phi_{\alpha\beta}$
+value weighting the composition $x_\beta$ becomes just unity, and the
+mixture rule becomes equal to a weighted arithmetic mean.
+
+If you optimize with prices, however, then even if the mixture property
+interpolates the component properties the optimum may be a mixture.
+
+\section{Transport Equations}\label{sec:transport-eqns}
+
+In general correlations for the Nusselt number may be power relations
+such as $N_{Nu} = N_{Re}^a N_{Pr}^b$. There is (\cite[eqn.~11.4-2]{deen1998analysis})
+
+\begin{equation}
+N_{Nu} = \begin{cases}
+\sqrt{N_{Re}} & N_{Re} \gg 1 \\
+\sqrt{N_{Re}N_{Pr}} & \text{fluid-fluid} \,,\\
+(N_{Re} N_{Pr})^{1/3} & N_{Re} < 1, N_{Pr} \gg 1, \text{fluid-solid}\,,\\
+N_{Re}^{1/2} N_{Pr}^{1/3} & N_{Re} \gg 1, N_{Pr} \gg 1, \text{fluid-solid}\,,\\
+N_{Re}^{1/2} N_{Pr}^{1/2} & N_{Re} \gg 1, N_{Pr} \ll 1, \text{fluid-solid}\,.
+\end{cases} \label{eqn:Nu-corrs}
+\end{equation}
+
+%if Re > 100: # Re >> 1
+%    return Re**0.5
+%elif phase == 'fluid':
+%    return Re**0.5 * Pr**0.5
+%elif Re < 1 and Pr > 100 and phase == 'solid': # Re <<1 or ~ `, Pr >> 1
+%    return Re**0.33 * Pr**0.33
+%elif Re > 100 and Pr > 100 and phase == 'solid':
+%    return Re**0.5 * Pr**0.33
+%elif Re > 100 and Pr < 0.01 and phase == 'solid':
+%    return Re**0.5 * Pr**0.5
+
+Here
+
+\begin{align}
+N_{Re} &= \frac{\rho v D}{\mu} \label{eqn:Re}\,,\\
+N_{Pr} &= \frac{\mu C_p}{k m} \label{eqn:Pr}\,.
+\end{align}
+
+From (\ref{eqn:Nu-corrs}), (\ref{eqn:Re}), and (\ref{eqn:Pr}), one can
+find from the definition of $N_{Nu} = hL/k$ an effective heat transfer
+coefficient ratio generally as follows (the heat capacity is number specific):
+
+
+\begin{equation}\label{eqn:main-equation}
+\frac{h_A}{h_B} = \left(\frac{k_A}{k_B}\right)^{1-b} 
+\left(\frac{\mu_A}{\mu_B}\right)^{b-a} 
+\left(\frac{C_{p, A}}{C_{p, B}}\right)^b 
+\left(\frac{m_A}{m_B}\right)^{a-b} \,.
+\end{equation}
+
+For ideal gases, the Prandtl number is independent of the pressure, because the
+thermodynamic properties of viscosity, heat capacity, and thermal conductivity
+only depend on one variable in the equation of state, from molecular theory
+originating as temperature (I say this rather than simply that "they are a
+function of temperature", since one could substitute in a pressure-volume
+dependence by the equation of state). However, pressure factors in
+significantly to the momentum transfer in terms of the density, to which it is
+proportional to pressure. The above equation is for comparing two gases (or gas
+mixtures) under the same conditions, in which case, $\rho_A/\rho_B = m_A/m_B$.
+One must use an arithmetic mean for the masses, as the thermodynamic properties
+of a gas mixture are arithmetic means.
+
+For air the Prandtl number is around 0.7, which is quite near 1. The
+correlations given are limited to transport regimes with limiting values of
+some dimensionelss groups, as the inequalities show. However, one always
+expects some power law scaling, so the question is really of the relative
+magnitudes of $b$ and $a$, which determine, for two of these quotients, whether
+the ratio is greater than or less than $1$.  For all reported correlations ist
+is shown that $a \geq b$, and the incompressible flow over a flat plate follows
+this as well, with $a=\frac 12$ and $b=\frac 15$ (see
+\S\ref{ref:incompressible-flat-plate}).
+
+\subsection{Further Simplifications and Comparison of Noble Gases}\label{sec:compare-noble}
+
+For gases, $k \propto C_p \mu$, up to an additive constant, so that one can
+(approximately) simplify the above to
+
+$$\frac{h_A}{h_B} = \left(\frac{\mu_A}{\mu_B}\right)^{1-a} \left(\frac{C_{p, A}}{C_{p, B}}\right)^b \left(\frac{m_A}{m_B}\right)^{a-b} \,.$$
+
+One can further put in mass dependencies for the viscosity, which go as the
+square root (though atomic diameter collision cross-section factors are here
+relevant, too). 
+
+$$\frac{h_A}{h_B} = \left(\frac{\sigma_A^2 \Omega_A}{\sigma_B^2 \Omega_B}\right)^{a-1} \left(\frac{C_{p, A}}{C_{p, B}}\right)^b \left(\frac{m_A}{m_B}\right)^{1/2 + a/2 -b} \,.$$
+
+For monatomic gases the ratio of number specific heat capacities is 1. This
+applies in comparing noble gases. In what remains, one can see that there is a
+dependence for which the mass ratios require $a > 2b - 1$, which is realized in
+almost any case since $b \leq 0.5$. However, since $a$ is very often less than
+one, and since as monatomic gas mass increases so do collision cross-section
+and diameter increase (the former because of dispersion interactions), the net
+effect for heat transfer is not obvious. This is tested (see
+\texttt{test-noble-gases} in the \texttt{test} directory), and it is obtained
+that, relative to helium as the maximum, neon has 56\% the heat transfer
+coefficient, argon 35\%, and krypton 26\%. Evidently the mass dependence is
+outdone by the radius and collision cross-section dependence.
+
+\subsection{Boundary Layer Convective Effects}
+
+It is required to explain the correlations (at a qualitative level) for the heat transfer coefficients
+which were simply taken from reference. From \cite[eqn.~7.19]{incropera1996fundamentals} the boundary
+layer thickness is inversely proportional to the root of Reynold's number,
+
+\begin{equation}\label{eqn:boundary-layer-thickness}
+\delta(x) = \frac{5 x}{\sqrt{N_{Re}(x)}} \,.
+\end{equation}
+
+So the boundary layer thickness is inversely proportional to the
+root of density from (\ref{eqn:Re}). For this reason, though higher
+atomic weight gases are worse for molecular level, or diffusive,
+transport, they are better for convective transport. In fact, just
+as the boundary layer decreases with the root of density, so do gas
+particle velocities decrease with the root of density, though this won't
+precisely cancel out because the terms don't appear in a ratio for the
+transport properties.
+
+Consequently, in convection dominated transport, which is the most common
+industrial flow case, higher atomic weight gases may be better, though this
+doesn't bear out in one case as already found for noble gases at least when
+laminar (see \S \ref{sec:compare-noble}). Do note, though, that Reynolds number
+dependence increases from 1/2 to 4/5 from laminar to turbulent flow (compare
+equations (7.30) and (7.36) \cite{incropera1996fundamentals}).
+
+\section{Modeling Flat Plate Heat Transfer}
+
+The above discussions are excellent for understanding the transport
+coefficients which have geometry- and flow-independent scaling, scaling only
+with thermodynamic variables of temperature and pressure and molecular
+properties (when comparing different gases and gas mixtures). Here some
+analytical results are treated for incompressible flows, and extensions to
+numerical computation of compressible flows and non-ideal geometries is given.
+
+\subsection{Radiative Heat Transfer for Wafer}
+
+It should be noted that the purpose of cooling with gases would generally to bring
+the wafer temperature down to room temperature from slight elevations. It isn't
+needed for very high temperatures, since the wafer should cool down by
+radiative heat transfer. In fact, to approximate the relative effect of
+convective and radiative heat transfer, there is the ratio
+
+$$ \frac{\sigma (T^4 - T_\infty^4)}{h(T - T_\infty)} \,,$$
+
+where $\sigma$ is the Stefan-Boltzmann constant and $h$ is a representative
+heat transfer coefficient. Using a representative heat transfer coefficient of
+$\SI{10}{W/(m^2\cdot K}$, this ratio is unity already at $\SI{400}{K}$. Emissivity factor
+corrections may decrease the readiative heat transfer significantly, especially
+when the mean wavelength changes by Wien's displacement law so that even a
+constant spectral emissivity function would result in a change in effective
+emissivity. If the effective emissivity is $0.5$ then the ratio is unity at $\SI{560}{K}$.
+
+\subsection{Solution of the Isothermal Flat Plate (Incompressible Fluid)}\label{ref:incompressible-flat-plate}
+
+The isothermal flat plate problem for incompressible flow has the Blasius
+solution, which is an analytical solution in the laminar regime, which applies
+when cooling with gases under many regions of interest.  Note this flat plate
+flow is parallel to the plate surface. The local Nusselt number, which is
+position dependent, is $N_{Nu}(x) = C N_{Re}(x)^{1/2} N_{Pr}^{1/3}$ where $C
+\approx 1/3$ (\cite[eqn.~7.30]{incropera1996fundamentals}). This requires only
+that $N_{Pr} \geq 0.6$, which is satisfied by most gases. The local Nusselt
+number can be averaged over a given distance $L$. In particular,
+$\overline{N_{Nu}} = \frac 29 N_{Re}^{1/2} N_{Pr}^{1/3}$. This is anyways
+irrelevant since the ratios, of interest for determining a gas property, are
+independent of such factors. One has for the flat plate
+
+\begin{equation} 
+\frac{h_A}{h_B} = \left(\frac{k_A}{k_B}\right)^{2/3} 
+\left(\frac{\mu_A}{\mu_B}\right)^{-1/6} 
+\left(\frac{C_{p, A}}{C_{p, B}}\right)^{1/3} 
+\left(\frac{m_A}{m_B}\right)^{1/6} \,.
+\end{equation} % check powers
+
+The average Nusselt number is good to have, rather than
+just the ratio, in order to check the validity of the isothermal or lumped
+capacitance assumption. In particular, $N_{Bi} = hL/k_{solid}$, and there
+results from substitution of the Nusselt number definition $N_{Bi} =
+k/k_{solid} N_{Nu}$. The time constant in a lumped capaciatance model is found as 
+
+$$\tau = \frac{h}{L C_p \rho/\mathcal{M}} \,,$$
+
+where as is convention throughout this document $C_p$ is number-specific.
+
+\subsubsection{Validity of Isothermal Assumption in Wafers}\label{sec:validity-isothermal}
+
+Wafers in modern fabrication are $\SI{300}{mm}$ in diameter and around
+$\SI{1}{mm}$ in thickness. This aspect ratio is so extreme that it is rarely
+observed in any other application.
+
+In the direction perpendicular to the wafer the lumped capacitance assumption
+is certainly valid due to this extreme aspect ratio. What may be less valid is
+thermal homogeneity in the direction parallel to the wafer. Silicon has a
+thermal conductivity similar to metals, around $\SI{148}{W/(m\cdot K)}$ at
+$\SI{300}{K}$, though it decreases with increasing temperature to as little as
+$\SI{30}{W/(m\cdot K)}$ at $\SI{1000}{K}$ (while more phonon modes are
+accessible at higher temperatures, at higher temperatures it can be they
+interfere with each other). Using the correlations for one gas mixture (see 
+\texttt{test-flat-plate.py}), I find $N_{Bi} = 0.04$, and it is only required that
+$N_{Bi} < 0.1$ for the lumped capacitance (isothermal) assumption to be valid. 
+
+Under the same conditions the time constant for the lumped capacitance model is
+around 3 milliseconds. For a wafer initially at $\SI{700}{\degree C}$, cooling
+to $\SI{25}{\degree C}$ when the ambient temperature is $\SI{20}{\degree C}$
+takes for such a time constant only $\SI{15}{ms}$. There is then a question for
+the motivation of this work as applied to semiconductor wafers, since any gas
+composition would be sufficient for cooling purposes, if cooling were ever
+needed. Still, there remain other interesting applications of the general
+question when the time constant is not necessarily so small, and very often the
+surrounding equipment, which has much higher thermal mass, may need to be
+cooled between processing steps.
+
+\section{Uniformly Random Sampling of Composition Space}
+
+In general, there is a simple but inefficient algorithm to generate
+a mesh of arbitrary dimension $m$ with fineness $n$ in $\Theta(n^m)$
+time. It is to iterate through every $m$ permutation of the elements
+of the range $0, 1/n, \ldots, 1$, that is, where $X_m$ is the
+$m$-dimensional Cartesian product, to iterate through every sequence in
+$X_m (0, 1/n, \ldots, 1)$. Then, check if the permutation sums to 1, and
+accept it if it does, otherwise rejecting it.
+
+This inefficiency to generate sample points is actualy not irrelevant
+since it is less expensive to do calculations on the coordinates
+$n^{m-1}$, provided they are $O(1)$ which for these algebraic equations
+they are, than it is to generate them in $O(n^m)$. While asymptotic
+growth doesn't take into account constant factors which are very
+significant, still there is the mathematically interesting question of
+how to uniformly randomly sample $m$ variables provided they sum to $1$
+and hence there are $m-1$ degrees of freedom. 
+
+Ternary plots allow you to uniformly sample by the triangular grid
+generated from intersections of 60\degree lines drawn from the
+equilateral triangle axes which are interior to the equilateral triangle.
+In particular, from each axis you draw lines parallel to the preceding
+axis, assigning a rotational order like clockwise. The intersections,
+tracing back to the axis linearly spaced, yield a composition tuple
+whose sum is 1. This turns out to be equivalent to the following simple
+iterative procedure:
+
+\begin{lstlisting}
+linspace = tuple(x/10 for x in range(11))
+for x1 in linspace:
+    for x2 in linspace:
+        if 1 - x1 - x2 > 0:
+            combs.append(x1, x2, 1 - x1 - x2)
+\end{lstlisting}
+
+However, an analogous routine does not work for quaternary
+composition. More generally, it may be expected that barycentric
+coordinates provide a means to uniformly randomly sample subject to the
+constraint.
+
+\subsection{Method by Sampling from Flat Dirichlet Distribution}
+
+I have not found a means using geometry and barycentric coordinates to randomly
+sample the quaternary phase space. One can randomly sample by using the
+Dirichlet distribution with all unity concentration coefficients, which is
+called the flat Dirichlet distribution. One randomly samples from an exponential
+distribution (which is an instance of the gamma distribution for general
+concentration coefficients) with probability density $e^{-x}$. Then one take
+thats and transform for every random sample $x_i$, where one has sampled $n$
+times to generate one random sample for an $n$-composition, into the following:
+
+\begin{equation}
+y_i = \frac{x_i}{\sum_{j=1}^n x_j}
+\end{equation}
+
+While not grid sampling, uniform random sampling achieves the same aim of
+uniformity. The length scale over which random sampling is approximately
+uniform, by which it is meant there is guaranteed to be at least one sample
+point, depends on the number of random samples drawn. The length scale must
+scale as $1/n^{1/3}$ and must be greater than the grid that would be formed by
+the same number of samples. Theoretically an exact quantification is
+interesing, that is, determine the distribution of $\max(\delta_{ij})$ where
+$\delta_{ij} = x_i - x_j$ and $x_0 = 0$, $x_{n+1} = 1$ for one dimension and
+then higher dimensions when the $x_i$ are realizations of a uniform random
+distribution on $[0, 1]$.  But the method of random sampling is so much faster
+than grid sampling that it is irrelevant in this application.
+
+Necessarily, the distribution of any one composition will not be
+uniformly random when the number of composition variables is greater
+than 2. The constraint (in statistics, the support of the distribution)
+makes it so a uniform grid has some values less likely than others. In
+particular, as you go toward $1$ for any given composition, the
+number of other possible compositions becomes only $1$ because of the
+constraint. Visually, this can be seen in the 3-composition case where
+there is less area (phase space) near the triangle vertices than in the
+triangle interior, and likewise for the vertices and interior of the
+tetrahedron in the 4-composition case.
+
+Generally, the symmetric Dirichlet distribution with some $\alpha$ can be used.
+For the symmetric Dirichlet Distribution (of which the flat Dirichlet
+distribution is the case $\alpha = 1$) there is
+
+\begin{align}
+\mu = \frac 1n \,,\\
+\nu = \frac{n-1}{n+1} \,,
+\end{align}
+%where $n$ is the dimension of the space.
+
+both of which are independent of $\alpha$. The mode is equal to the mean
+for the symmetric Dirichlet distribution. Hence there is no evident
+reason to use the general symmetric Dirichlet distribution over the flat
+Dirichlet distribution.
+
+\subsection{Other Methods}
+
+Knuth (\cite[\S 3.4.1]{taocp}) gives a method to determine a random point on an
+$n$-dimensional sphere with radius one, which is what is needed for a
+composition space of $n$ components (as opposed to a volume of a simplex of
+dimension $n-1$). It consists in using generalized polar coordinates to obtain
+points randomly oriented about the origin in $n$-dimensional space. These
+points can be projected along the radial line to the unit sphere to get a
+solution. He cites \cite[302]{brownmodernmathematics1956} as the first
+suggestion of this method.  This solution has the advantage of not being a
+rejection sampling algorithm, and so not wasting any samples which are
+generated.
+
+In order to make a uniform grid in a hyperdimensional space on the surface of a
+hyperdimensional sphere, one might, rather than uniformly vary the angles,
+instead uniformly vary their arcsines or arccosines. In this way, one would
+obtain uniform arcs on the surface, which by their intersections make a uniform
+grid.
+
+\section{Optimization Search}
+
+Grid enumeration is the most inefficient way to determine an optimum, though it
+is not expensive here for ternary gas compositions and there is scientific
+interest in evaluating the entire composition space. Any optimization search
+can be used, and the composition constraint can be imposed simply by
+substituting the last composition variable as 1 minus the sum of all others.
+Therefore secant or other non-derivate methods, first derivative methods like
+Newton's method or the more general line search, or second derivative methods
+can be used. Imposing constraints on non-linear problems can be difficult if
+temperature, pressure, flow geometry, or flow velocity are to be optimized in
+addition to composition. Constraints are generally required since the governing
+equations are only valid for some ranges of the dimensionless groups. But
+methods such as sequential quadratic programming can be used in this case.
+
+\section{Conclusion}
+
+The main result is given in eqn.~\ref{eqn:main-equation}. A figure of merit for
+a gas can be defined in terms of its quantities appearing in that equation,
+which is dimensioned, but allow comparison between more than one gas. This is
+done in the \texttt{test} directory using the powers of the Blasius solution to
+the flat plate problem (\texttt{test-flat-plate.py}). A small discussion was
+made on uniform sampling of high dimensional composition space, with reference
+to search methods, in the case that high dimensional (quaternary or higher)
+optima may need to be found.
+
+\printbibliography
+
+\end{document}
